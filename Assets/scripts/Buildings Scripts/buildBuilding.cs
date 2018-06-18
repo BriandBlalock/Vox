@@ -63,22 +63,31 @@ public class buildBuilding : MonoBehaviour {
                 {
                     bool[] sides = { false, false, false, false, false, false };
                     //top
-
-
-                    if (z == 0 || structure[x, z - 1, y] == 0)
-                        sides[1] = true;
-                    if (x == 0 || structure[x - 1, z, y] == 0)
-                        sides[2] = true;
-                    if (z == maxZ -1 || structure[x, z + 1, y] == 0)
-                        sides[3] = true;
-                    if (x == maxX - 1 || structure[x + 1, z, y] == 0)
-                        sides[4] = true;
-                    if (y == maxY - 1 || structure[x, z, y + 1] == 0)
-                        sides[5] = true;
+                    string print = "";
+                   if (structure[x, z, y] == 1) { 
+                        if (z == 0 || structure[x, z - 1, y] == 0)
+                            sides[2] = true;
+                        if (x == 0 || structure[x - 1, z, y] == 0)
+                            sides[1] = true;
+                        if (z == maxZ - 1 || structure[x, z + 1, y] == 0)
+                            sides[4] = true;
+                        if (x == maxX - 1 || structure[x + 1, z, y] == 0)
+                            sides[3] = true;
+                        if (y == maxY - 1 || structure[x, z, y + 1] == 0)
+                            sides[5] = true;
+                  }
                     if (y == 0 && !sides[1] && !sides[2] && !sides[3] && !sides[4] && !sides[5])
                         sides[0] = true;
+                    
+                    for( int i = 0; i < 6; i++)
+                    {
 
-                    cells[x, y, z].updateCell(sides);
+                       print += (sides[i] ? "True ": "False " );
+
+                    }
+                    Debug.Log(print);
+
+                    cells[x, z,y ].updateCell(sides);
                 }
             }
         }
@@ -99,9 +108,11 @@ public class buildBuilding : MonoBehaviour {
                 for ( int y = 0; y< maxY; y++)
                 {
 
-                    Vector3 cellPosition = gameObject.transform.position + new Vector3(x * (size/4) , y * (size / 4), z * (size / 4));
-                    cells[x, z, y] = new buildingCell(Voxel, cellPosition, size );
+                    Vector3 cellPosition =  new Vector3(x * (size/4f) , y * (size / 4f), z * (size / 4f));
+                    cells[x, z, y] = new buildingCell( Voxel, cellPosition, size );
                     cells[x, z, y].makeUninstantiatedCell();
+                    cells[x, z, y].cell.transform.SetParent(gameObject.transform);
+                    cells[x, z, y].cell.transform.localPosition = cellPosition;
 
                 }
          
@@ -112,25 +123,25 @@ public class buildBuilding : MonoBehaviour {
 
     private void planBuilding()
     {
-        structure = new int[maxX, maxY, maxZ];
+        structure = new int[maxX, maxZ, maxY];
 
         int maxLayerSize = maxX * maxZ;
 
 
 
-        int layerSize = maxLayerSize - Random.Range(0, maxLayerSize / 4);
+        int layerSize = maxLayerSize - Random.Range(0, (maxLayerSize/2) );
         int lastLayerSize = layerSize;
-     
 
+        Debug.Log(layerSize.ToString());
         // only for the first floor
-        for (int l = 0 ; l > layerSize; l++)
+        for (int l = 0 ; l < layerSize; l++)
         {
-
+           // Debug.Log(l.ToString());
             bool placed = false;
 
             while (!placed)
             {
-
+               // Debug.Log("in while");
                 int pickZ = Random.Range(0, maxZ);
                 for ( int x = 0; x < maxX; x++)
                 {
@@ -141,6 +152,7 @@ public class buildBuilding : MonoBehaviour {
                         structure[x, pickZ, 0] = 1;
                         
                         placed = true;
+                       
                         break;
                     }
                 }       
@@ -150,10 +162,10 @@ public class buildBuilding : MonoBehaviour {
 
         for ( int y = 1 ; y < maxY; y++)
         {
-            layerSize = maxLayerSize - Random.Range(0, maxLayerSize/4) - (maxLayerSize - lastLayerSize) ;
+            layerSize = maxLayerSize - Random.Range(0, (maxLayerSize / 2)) - (maxLayerSize - lastLayerSize) ;
             lastLayerSize = layerSize;
 
-            for (int l = 0; l > layerSize; l++)
+            for (int l = 0; l < layerSize; l++)
             {
 
                 bool placed = false;
@@ -170,12 +182,32 @@ public class buildBuilding : MonoBehaviour {
 
                             structure[x,  pickZ, y] = 1;
                             placed = true;
+                           // Debug.Log("placed");
                             break;
                         }
                     }
                 }
             }
         }
+
+        string str = "[";
+        for( int y= 0; y < maxY; y++)
+        {
+            str += "y[";
+            for(int x = 0; x < maxX; x++)
+            {
+                str += "x[z";
+                for(int z = 0; z < maxZ; z++)
+                {
+                    str += structure[x, z, y].ToString() + ", ";
+                }
+                str += "]";
+            }
+            str += "]";
+        }
+        str += "]";
+        Debug.Log(str);
+
     }
 
 }

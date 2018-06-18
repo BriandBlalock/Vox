@@ -1,8 +1,17 @@
-﻿using System.Collections;
+﻿/*
+written by Brian Blalock
+
+This class is a handler for creating a flat panel of voxels 
+
+
+
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Panel : MonoBehaviour {
+public class Panel  {
 
     private Transform vox;
 
@@ -11,13 +20,13 @@ public class Panel : MonoBehaviour {
 
     private int size; // panel size
 
-    GameObject panel = new GameObject("Panel");
+    public GameObject panel = new GameObject("Panel");
 
     public Transform[,] panelVoxs; 
 
     // Use this for initialization
     void Start () {
-        Instantiate(panel, origin, orientation);
+        
     }
 	
 	// Update is called once per frame
@@ -25,19 +34,21 @@ public class Panel : MonoBehaviour {
 		
 	}
 
-    public Panel(Vector3 origin, Quaternion orientation, Transform vox, int size)
+    public Panel(Quaternion orientation, Transform vox, int size)
     {
 
         this.orientation = orientation;
-        this.origin = origin;
+        panel.transform.localRotation = orientation;
+ 
         this.vox = vox;
         this.size = size;
 
-      
     }
 
     public void buildPanel()
     {
+        
+
         panelVoxs = new Transform[size, size];
         for (int x = 0; x < size; x++)
         {
@@ -46,15 +57,16 @@ public class Panel : MonoBehaviour {
             {
 
                 Transform tempVoxel = vox;
-
-                panelVoxs[x,z] = Instantiate(tempVoxel, new Vector3(x / 4, 0, z / 4), Quaternion.identity);
-                panelVoxs[x, z].transform.SetParent(panel.transform);
+                
+                panelVoxs[x,z] = Object.Instantiate(tempVoxel , panel.transform);
+                panelVoxs[x, z].transform.localPosition =  new Vector3(x / 4f, 0f, z / 4f);
                 // panelVoxs[x,z].GetComponent<Renderer>().material.color = Color32.Lerp(floorColor1, floorColor2, Random.Range(0.0f, 1.0f));  // get a color in the range
 
             }
 
         }
 
+     //   Object.Instantiate(panel, origin, orientation);
 
     }
 }
