@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿/*
+ * Created by Brian Blalock
+ * 
+ * 
+ * Mainly just a way to group panels together at one location and update them at once.
+ * 
+ * 
+ * 
+ */ 
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +17,7 @@ public class buildingCell {
     private Transform vox;
 
     public Panel[] sides = new Panel[6];
-    private Vector3 origin;
+
     private bool[] layout = { false, false, false, false, false, false }; // a array 
     private int size;
     // Use this for initialization
@@ -24,15 +34,14 @@ public class buildingCell {
 		
 	}
 
-    public buildingCell(Transform vox, Vector3 origin, int size)
+    public buildingCell(Transform vox,  int size) // asses in the voxel prefab and size of the panels
     {
 
         this.vox = vox;
-        this.origin = origin;
         this.size = size;
 
     }
-    public void updateCell(bool[] newLayout)
+    public void updateCell(bool[] newLayout)    //creates panels based on new layout
     {
 
         layout = newLayout;
@@ -43,7 +52,7 @@ public class buildingCell {
 
     public void makeUninstantiatedCell() // creates the 6 empty panels  with their appropriate orientations
     {
-        for ( int i =  0; i < 6; i++)
+        for ( int i =  0; i < 6; i++)    // creates empty panels in their appropriate places and orientations
         {
             Vector3 offset;
           
@@ -51,7 +60,7 @@ public class buildingCell {
             switch (i)
             {
 
-                case 0: //bottom y-
+                case 0: //bottom ( floor panel )
                     sides[i] = new Panel(Quaternion.identity, vox, size);   
 
                     break;
@@ -91,7 +100,7 @@ public class buildingCell {
 
     }
 
-    public void buildCell()
+    public void buildCell()             // Just loops through the panels and has them be built if needed
     {
 
        

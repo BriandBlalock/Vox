@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4648455873348342}
-  - component: {fileID: 114051993823117464}
+  - component: {fileID: 114439745318683570}
   m_Layer: 0
   m_Name: LevelRenderer
   m_TagString: Untagged
@@ -40,7 +40,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114051993823117464
+--- !u!114 &114439745318683570
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -48,20 +48,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1836824670635002}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 694f64e8ed033b74e8e6a8021bdfc81d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0fcabbfb096960444880de4feaf70276, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Voxel: {fileID: 4808984042057828, guid: 2231ddedbaac51a48af8148211484fb0, type: 2}
-  floorColor1:
-    serializedVersion: 2
-    rgba: 4282990135
-  floorColor2:
-    serializedVersion: 2
-    rgba: 4288057980
-  thic: 0
-  tileSize: 0
-  len: 0
-  wid: 0
-  hgt: 0
-  floorRoughness: 0
-  wallRoughness: 0

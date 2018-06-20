@@ -1,7 +1,7 @@
 ﻿/*
 written by Brian Blalock
 
-This class is a handler for creating a flat panel of voxels 
+This class is a handler for creating holding a flat panel of voxels 
 
 
 
@@ -45,7 +45,7 @@ public class Panel  {
 
     }
 
-    public void buildPanel()
+    public void buildPanel()                                // constructs the flat plane of voxels
     {
         
 
