@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class LevelCreator : MonoBehaviour {
 
+    public Transform Voxel; 
+
+    public int xDim;
+    public int zDim;
+
+    private int[,] levelLayout;
 	// Use this for initialization
 	void Start () {
 		
@@ -13,4 +19,7 @@ public class LevelCreator : MonoBehaviour {
 	void Update () {
 		
 	}
+
+
+
 }

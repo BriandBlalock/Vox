@@ -24,15 +24,7 @@ public class Panel  {
 
     public Transform[,] panelVoxs; 
 
-    // Use this for initialization
-    void Start () {
-        
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 
     public Panel(Quaternion orientation, Transform vox, int size)
     {
