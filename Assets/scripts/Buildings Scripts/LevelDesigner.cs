@@ -11,13 +11,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/* not working on this for now
+ * 
+ * Going to used handmade templates to start
+ * 
+ * 
+ * */
+
+
 public class LevelDesigner  {
 
     private int[,] layout;
 
     private Vector2[] exits;
 
-    private Vector2[,] buildingsInfo;
+    private List<List<Vector2>> buildingsInfo;
 
     private int xDim;
     private int zDim;
@@ -96,7 +104,7 @@ public class LevelDesigner  {
 
     }
 
-    private void addBuilding(int xLoc, int zLoc)
+    private void addBuilding(int xLoc, int zLoc, int xLen, int zLen)
     {
         int xLen = 0; //xDim for the building 
         int zLen = 0; //zDim for the building 

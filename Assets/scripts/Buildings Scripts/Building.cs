@@ -37,7 +37,9 @@ public class Building {
 
     private Cell[,,] cells; // xzy
 
-    public Building(int x, int y, int z, int size, Transform vox)
+    private List<Vector2> emptyCellLocations = new List<Vector2>();  // used to specify x,z coordinates that should not be built on, used to make more specific building shapes 
+
+    public Building(int x,  int z, int y, int size, Transform vox)
     {
 
         maxX = x;
@@ -45,6 +47,17 @@ public class Building {
         maxZ = z;
         Voxel = vox;
         this.size = size;
+
+    }
+    public Building(int x, int z, int y, int size, Transform vox, List<Vector2> empty)
+    {
+
+        maxX = x;
+        maxY = y;
+        maxZ = z;
+        Voxel = vox;
+        this.size = size;
+        emptyCellLocations = empty;
 
     }
 
@@ -56,6 +69,7 @@ public class Building {
         constructPanels();  //render the panels
 
     }
+
 
 
     //Iterates through thebuilding's cells, determines which panels are external/should be created, then calls updateCell() to render each cell 
@@ -136,12 +150,12 @@ public class Building {
     {
         structure = new int[maxX, maxZ, maxY]; 
 
-        int maxLayerSize = maxX * maxZ;// max amount of cells that can be in a single Y layer
+        int maxLayerSize = maxX * maxZ;                                             // max amount of cells that can be in a single Y layer
 
 
 
-        int layerSize = maxLayerSize - Random.Range(1, ((maxLayerSize)/2) );       // chooses the size of the first layer of the building , minimum is 1/2 of max size, max is max-1
-        int lastLayerSize = layerSize;                                             // keeps track of previous layer so upper layer is always smaller
+        int layerSize = maxLayerSize - Random.Range(1, ((maxLayerSize)/2) );        // chooses the size of the first layer of the building , minimum is 1/2 of max size, max is max-1
+        int lastLayerSize = layerSize;                                              // keeps track of previous layer so upper layer is always smaller
 
         // Debug.Log(layerSize.ToString());
         // only for the first floor
@@ -157,7 +171,7 @@ public class Building {
                 for ( int x = 0; x < maxX; x++)             // loop through X values at that Z
                 {
 
-                    if (structure[x, pickZ, 0 ] == 0)       //If there is an empty cell spot 
+                    if (structure[x, pickZ, 0 ] == 0 && !emptyCellLocations.Contains(new Vector2(x,pickZ)))       //If there is an empty cell spot , and it isn't one of the spots that shouldnt be filled
                     {
 
                         structure[x, pickZ, 0] = 1;         //place the cell there
@@ -206,7 +220,7 @@ public class Building {
         }
 
 
-        // loop that prints the layout of the building 
+        /* loop that prints the layout of the building 
         string str = "[";
         for( int y= 0; y < maxY; y++)
         {
@@ -224,7 +238,7 @@ public class Building {
         }
         str += "]";
         Debug.Log(str);
-
+        */
     }
 
 }
