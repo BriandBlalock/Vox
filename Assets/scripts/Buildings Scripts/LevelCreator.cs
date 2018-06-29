@@ -18,14 +18,15 @@ public class LevelCreator : MonoBehaviour {
         { 2, 2, 2, 1, 3, 3, 3},
         { 1 ,1, 1, 1, 1, 1, 1},
         { 4, 4, 4 ,1 ,6 ,6 ,6},
-        { 5, 5 ,5 ,1 ,6 ,6 ,6},
-        { 5, 5, 5 ,1 ,6 ,6 ,6 }
+        { 4, 4 ,4 ,1 ,6 ,6 ,6},
+        { 4, 4, 4 ,1 ,6 ,6 ,6 }
     };
-
+    
     private Dictionary<int, Building> buildings = new Dictionary<int, Building>();
+
 	// Use this for initialization
 	void Start () {
-		
+        buildLevel();
 	}
 	
 	// Update is called once per frame
@@ -44,10 +45,16 @@ public class LevelCreator : MonoBehaviour {
             for (int z = 0; z < zDim; z++)
             {
 
-
+                if( levelLayout[x,z] > 1 && !buildings.ContainsKey( levelLayout[x,z] ) )
+                {
+                    Debug.Log("building" + levelLayout[x,z]);
+                    createBuilding(x, z);
+                }
 
             }
         }
+
+        constructPaths();
 
     }
 
@@ -61,46 +68,141 @@ public class LevelCreator : MonoBehaviour {
     public void createBuilding(int xOffset, int zOffset)
     {
 
-        int xLen = xDim- xOffset;
-        int zLen = zDim- zOffset;
-        int buildingNum = levelLayout[xOffset, zOffset];
-        for (int x = xOffset; x < xLen + xOffset; x++)
+        int xLen = 0;                           // dimensions of the buildings
+        int zLen = 0;                           // start with the max size that can bui built in space without going out of bounds 
+
+        int buildingNum = levelLayout[xOffset, zOffset];    // gets the specific number of the building, since each building is specified by a unique number in the layout
+
+        for (int x = xOffset; x < xDim && levelLayout[x, zOffset] == buildingNum; x++)      //loop through the layout of the level, from starting corner of building till you find the edge of section or you hit a different number
         {
 
-            for( int z = zOffset; z < zLen + zOffset; z++)
+            xLen++;
+           
+        }
+
+
+        for (int z = zOffset; z < zDim && levelLayout[xOffset, z] == buildingNum; z++)      //loop through the layout of the level, from starting corner of building till you find the edge of section or you hit a different number
+        {
+
+            zLen++;
+
+        }
+
+
+
+        int bHeight = Random.Range(1, 4);                // pick a height for the building
+
+        Vector3 offset = new Vector3();                 // place holder for the local posiion of the building 
+        Quaternion rotation = Quaternion.identity;      // place holder for the rotation
+        Building temp;                                  // same for the neew building
+        Vector2 center = getCenterOfPath();             // gets center of the path through the section
+
+        float angleFromBuildingToCenter = Vector2.SignedAngle(center - new Vector2((int)(xLen / 2 + xOffset), (int)(zLen / 2 + zOffset)) , new Vector2(xDim / 2, zDim ) );
+        // gets the angle fron the center of the building to the center of the path. 
+
+        // 
+        if (angleFromBuildingToCenter >= 135 || angleFromBuildingToCenter <= -135)
+        {// face left, -X, move origin along x and z to far right corner, rotate -180 
+
+            offset = new Vector3(offsetDistance(xOffset + xLen)-.25f, 0, offsetDistance(zOffset + zLen) -.25f);
+            rotation = Quaternion.Euler(0, -180, 0);
+            temp = new Building(xLen, zLen, bHeight, cellSize, Voxel);
+
+
+        }
+        else if(angleFromBuildingToCenter <135 && angleFromBuildingToCenter >= 45)// face up , +Z , move origin along x, rotate 90 around Y, flip xlen and zlen
+        {
+
+         
+
+            offset = new Vector3(offsetDistance(xOffset), 0, offsetDistance(zOffset + zLen) -.25f);
+            rotation = Quaternion.Euler(0, 90, 0);
+            temp = new Building(zLen, xLen, bHeight, cellSize, Voxel);
+
+        }
+        else if( angleFromBuildingToCenter< 45 && angleFromBuildingToCenter >= -45)// face right +X , origin is default, orientation is default
+        {
+
+            offset = new Vector3(offsetDistance(xOffset), 0, offsetDistance(zOffset));
+            temp = new Building(xLen, zLen, bHeight, cellSize, Voxel);
+
+        }
+        else // face down, -Z,  move along Z, rotate -90, flip zlen and xlen
+        {
+
+            offset = new Vector3(offsetDistance(xOffset + xLen) -.25f, 0, offsetDistance(zOffset));
+            rotation = Quaternion.Euler(0, -90, 0);
+            temp = new Building(zLen, xLen, bHeight, cellSize, Voxel);
+
+        }
+
+      
+        temp.building.transform.SetParent(gameObject.transform); 
+
+        temp.building.transform.localPosition = offset;
+        temp.building.transform.localRotation = rotation;
+        temp.constructBuilding();
+        buildings.Add(buildingNum, temp); 
+        
+
+
+    }
+    private float offsetDistance(int cellNum)
+    {
+
+        return cellNum * (cellSize / 4);
+
+    }
+
+    private void constructPaths()
+    {
+
+        for ( int x = 0; x < xDim; x++)
+        {
+
+            for (int z = 0; z < zDim; z++)
             {
 
-                if (z != zDim - 1 && levelLayout[x, z + 1] != buildingNum)
-                    zLen = z;
-                if (x != xDim - 1 && levelLayout[x + 1, z] != buildingNum)
-                    xLen = x;
+                if (levelLayout[x, z] == 1) { 
+                    Cell path = new Cell(Voxel, cellSize);                                           // create cell 
+                    path.makeUninstantiatedCell();                                                    // builds empty panels
+                    path.cell.transform.SetParent(gameObject.transform);                                // sets parent to keep heirarchy clean and maintain local position
+                    path.cell.transform.localPosition = new Vector3(offsetDistance(x), 0, offsetDistance(z));// sets postion of the cell relative to the origin of the building.
+                    path.cell.transform.localRotation = Quaternion.identity;
+                    path.updateCell(  new bool[] {true, false,false,false,false, false} )  ;
+                  }
+
+            }
+        }
+
+
+    }
+
+    private Vector2 getCenterOfPath()
+    {
+
+        Vector2 vectorSum = new Vector2();
+        int numberOfPathVectors = 0;
+        for (int x = 0; x < xDim; x++)
+        {
+
+            for(int z = 0; z< zDim; z++)
+            {
+
+                if(levelLayout[x,z] == 1)
+                {
+
+                    vectorSum += new Vector2(x, z);
+                    ++numberOfPathVectors;
+
+                }
 
             }
 
         }
 
-        int bHeight = Random.Range(1, 4);
+        return vectorSum / numberOfPathVectors;
 
-        Vector3 offset = new Vector3();
-        Quaternion rotation = Quaternion.identity;
-        Building temp;
-
-        if (zOffset > zDim)
-        {
-            offset = new Vector3(xOffset * (cellSize / 4), 0, (zOffset + xLen) * (cellSize / 4));
-            rotation = new Quaternion.euler(0, 90, 0);
-            temp = new Building(zLen, xLen, bHeight, cellSize, Voxel);
-
-        }
-
-
-        Building temp = new Building(xLen, zLen,bHeight, cellSize, Voxel );
-        temp.building.transform.SetParent(gameObject.transform);
-
-        temp.building.transform.localPositon = ;
-
-
-        temp.constructBuilding();
     }
 
 }

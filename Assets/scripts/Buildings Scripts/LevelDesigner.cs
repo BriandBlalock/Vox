@@ -104,7 +104,7 @@ public class LevelDesigner  {
 
     }
 
-    private void addBuilding(int xLoc, int zLoc, int xLen, int zLen)
+    private void addBuilding(int xLoc, int zLoc)
     {
         int xLen = 0; //xDim for the building 
         int zLen = 0; //zDim for the building 

@@ -70,7 +70,7 @@ public class Building {
 
     }
 
-
+    
 
     //Iterates through thebuilding's cells, determines which panels are external/should be created, then calls updateCell() to render each cell 
     private void constructPanels()      
@@ -115,6 +115,8 @@ public class Building {
             } 
         }
     }
+
+
                 
     // Fills the cell structure with empty cells in their needed location.
     private void fillCells()    
@@ -137,6 +139,7 @@ public class Building {
                     cells[x, z, y].makeUninstantiatedCell();                                                    // builds empty panels
                     cells[x, z, y].cell.transform.SetParent(building.transform);                                // sets parent to keep heirarchy clean and maintain local position
                     cells[x, z, y].cell.transform.localPosition = cellPosition;                                 // sets postion of the cell relative to the origin of the building.
+                    cells[x, z, y].cell.transform.localRotation = Quaternion.identity;
 
                 }
          
@@ -171,7 +174,7 @@ public class Building {
                 for ( int x = 0; x < maxX; x++)             // loop through X values at that Z
                 {
 
-                    if (structure[x, pickZ, 0 ] == 0 && !emptyCellLocations.Contains(new Vector2(x,pickZ)))       //If there is an empty cell spot , and it isn't one of the spots that shouldnt be filled
+                    if (structure[x, pickZ, 0 ] == 0 && !emptyCellLocations.Contains(new Vector2(x,pickZ)) )       //If there is an empty cell spot , and it isn't one of the spots that shouldnt be filled
                     {
 
                         structure[x, pickZ, 0] = 1;         //place the cell there
