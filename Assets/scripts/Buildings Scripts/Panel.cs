@@ -17,7 +17,9 @@ public class Panel  {
 
     private Quaternion orientation;
     private Vector3 origin;
-
+    
+    public Color color1;
+    public Color color2;
     private int size; // panel size
 
     public GameObject panel = new GameObject("Panel");
@@ -52,7 +54,7 @@ public class Panel  {
                 
                 panelVoxs[x,z] = Object.Instantiate(tempVoxel , panel.transform);
                 panelVoxs[x, z].transform.localPosition =  new Vector3(x / 4f, 0f, z / 4f);
-                // panelVoxs[x,z].GetComponent<Renderer>().material.color = Color32.Lerp(floorColor1, floorColor2, Random.Range(0.0f, 1.0f));  // get a color in the range
+                panelVoxs[x,z].GetComponent<Renderer>().material.color = Color32.Lerp(color1, color2, Random.Range(0.0f, 1.0f));  // get a color in the range
 
             }
 

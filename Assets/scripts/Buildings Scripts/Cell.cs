@@ -18,6 +18,10 @@ public class Cell {
 
     public Panel[] sides = new Panel[6];
 
+    // colors for the building's color pallette *** not yet implemented ***
+    public Color color1;
+    public Color color2;
+
     private bool[] layout = { false, false, false, false, false, false }; // a array 
     private int size;
     // Use this for initialization
@@ -86,6 +90,8 @@ public class Cell {
             }
 
             sides[i].panel.transform.SetParent(cell.transform);
+            sides[i].color1 = color1;
+            sides[i].color2 = color1;
 
         }
 

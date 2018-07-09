@@ -17,8 +17,8 @@ public class Building {
     Transform Voxel; 
 
     // colors for the building's color pallette *** not yet implemented ***
-    public Color32 color1; 
-    public Color32 color2;
+    public Color color1; 
+    public Color color2;
 
     //size of building's dimensions
     int maxX;
@@ -87,7 +87,7 @@ public class Building {
                     bool[] sides = { false, false, false, false, false, false }; // cell default is to have to sides created
                     //top
                     string print = "";
-                   if (structure[x, z, y] == 1) { // check that the cell needs to be filled 
+                   if (structure[x, z, y] == 1) {                           // check that the cell needs to be filled 
                         if (z == 0 || structure[x, z - 1, y] == 0)          //checks if panel faceing -Z needs to be rendered
                             sides[2] = true;
                         if (x == 0 || structure[x - 1, z, y] == 0)          // -X
@@ -136,11 +136,13 @@ public class Building {
                     Vector3 cellPosition =  new Vector3(x * (size/4f) , y * (size / 4f), z * (size / 4f));      //cell position is based off of where in the structure it is being placed * the amount of voxels in one dimension of a panel
                                                                                                                 // size is divided by 4 because of the .25 scale on the Voxels, This may be changed later to have it be modifiable
                     cells[x, z, y] = new Cell( Voxel, size );                                           // create cell 
+                    cells[x, z, y].color1 = color1;
+                    cells[x, z, y].color2 = color2;
                     cells[x, z, y].makeUninstantiatedCell();                                                    // builds empty panels
                     cells[x, z, y].cell.transform.SetParent(building.transform);                                // sets parent to keep heirarchy clean and maintain local position
                     cells[x, z, y].cell.transform.localPosition = cellPosition;                                 // sets postion of the cell relative to the origin of the building.
                     cells[x, z, y].cell.transform.localRotation = Quaternion.identity;
-
+                  
                 }
          
             }

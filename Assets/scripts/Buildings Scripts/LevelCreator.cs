@@ -9,6 +9,10 @@ public class LevelCreator : MonoBehaviour {
     public int xDim;
     public int zDim;
 
+    // colors for the building's color pallette *** not yet implemented ***
+    public Color color1;
+    public Color color2;
+    public Color pathColor;
     public int cellSize;
 
     private int[,] levelLayout =
@@ -17,9 +21,9 @@ public class LevelCreator : MonoBehaviour {
         { 2, 2, 2, 1, 3, 3, 3},
         { 2, 2, 2, 1, 3, 3, 3},
         { 1 ,1, 1, 1, 1, 1, 1},
-        { 4, 4, 4 ,1 ,6 ,6 ,6},
-        { 4, 4 ,4 ,1 ,6 ,6 ,6},
-        { 4, 4, 4 ,1 ,6 ,6 ,6 }
+        { 4, 4, 5 ,5 ,6 ,6 ,6},
+        { 4, 4 ,5 ,5, 6 ,6 ,6},
+        { 4, 4, 5 ,5 ,6 ,6 ,6 }
     };
     
     private Dictionary<int, Building> buildings = new Dictionary<int, Building>();
@@ -38,6 +42,7 @@ public class LevelCreator : MonoBehaviour {
     // loop through levelLayout
     public void buildLevel()
     {
+        Vector2 center = getCenterOfPath();
 
         for (int x = 0; x < xDim; x++)
         {
@@ -48,7 +53,7 @@ public class LevelCreator : MonoBehaviour {
                 if( levelLayout[x,z] > 1 && !buildings.ContainsKey( levelLayout[x,z] ) )
                 {
                     Debug.Log("building" + levelLayout[x,z]);
-                    createBuilding(x, z);
+                    createBuilding(x, z, center);
                 }
 
             }
@@ -65,7 +70,7 @@ public class LevelCreator : MonoBehaviour {
      * 
      * */
 
-    public void createBuilding(int xOffset, int zOffset)
+    public void createBuilding(int xOffset, int zOffset, Vector2 cent)
     {
 
         int xLen = 0;                           // dimensions of the buildings
@@ -90,12 +95,12 @@ public class LevelCreator : MonoBehaviour {
 
 
 
-        int bHeight = Random.Range(1, 4);                // pick a height for the building
+        int bHeight = Random.Range(1, 5);                // pick a height for the building
 
         Vector3 offset = new Vector3();                 // place holder for the local posiion of the building 
         Quaternion rotation = Quaternion.identity;      // place holder for the rotation
         Building temp;                                  // same for the neew building
-        Vector2 center = getCenterOfPath();             // gets center of the path through the section
+        Vector2 center = cent;            // gets center of the path through the section
 
         float angleFromBuildingToCenter = Vector2.SignedAngle(center - new Vector2((int)(xLen / 2 + xOffset), (int)(zLen / 2 + zOffset)) , new Vector2(xDim / 2, zDim ) );
         // gets the angle fron the center of the building to the center of the path. 
@@ -110,7 +115,7 @@ public class LevelCreator : MonoBehaviour {
 
 
         }
-        else if(angleFromBuildingToCenter <135 && angleFromBuildingToCenter >= 45)// face up , +Z , move origin along x, rotate 90 around Y, flip xlen and zlen
+        else if(angleFromBuildingToCenter <=135 && angleFromBuildingToCenter > 45)// face up , +Z , move origin along x, rotate 90 around Y, flip xlen and zlen
         {
 
          
@@ -120,7 +125,7 @@ public class LevelCreator : MonoBehaviour {
             temp = new Building(zLen, xLen, bHeight, cellSize, Voxel);
 
         }
-        else if( angleFromBuildingToCenter< 45 && angleFromBuildingToCenter >= -45)// face right +X , origin is default, orientation is default
+        else if( angleFromBuildingToCenter <= 45 && angleFromBuildingToCenter >= -45)// face right +X , origin is default, orientation is default
         {
 
             offset = new Vector3(offsetDistance(xOffset), 0, offsetDistance(zOffset));
@@ -141,6 +146,8 @@ public class LevelCreator : MonoBehaviour {
 
         temp.building.transform.localPosition = offset;
         temp.building.transform.localRotation = rotation;
+        temp.color1 = color1;
+        temp.color2 = color2;
         temp.constructBuilding();
         buildings.Add(buildingNum, temp); 
         
@@ -165,10 +172,13 @@ public class LevelCreator : MonoBehaviour {
 
                 if (levelLayout[x, z] == 1) { 
                     Cell path = new Cell(Voxel, cellSize);                                           // create cell 
+                    path.color1 = pathColor;
+                    path.color2 = pathColor;
                     path.makeUninstantiatedCell();                                                    // builds empty panels
                     path.cell.transform.SetParent(gameObject.transform);                                // sets parent to keep heirarchy clean and maintain local position
                     path.cell.transform.localPosition = new Vector3(offsetDistance(x), 0, offsetDistance(z));// sets postion of the cell relative to the origin of the building.
                     path.cell.transform.localRotation = Quaternion.identity;
+                    
                     path.updateCell(  new bool[] {true, false,false,false,false, false} )  ;
                   }
 
@@ -200,6 +210,8 @@ public class LevelCreator : MonoBehaviour {
             }
 
         }
+
+        Debug.Log(vectorSum / numberOfPathVectors);
 
         return vectorSum / numberOfPathVectors;
 
